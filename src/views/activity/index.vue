@@ -24,12 +24,14 @@
       >Add</el-button>
     </div>
     <el-table :data="tableData" stripe border style="width:100%;margin-top: 20px">
-      <el-table-column prop="id" label="ID" width="100"></el-table-column>
       <el-table-column prop="name" label="名称" width="150"></el-table-column>
-      <el-table-column prop="host" label="举办方" width="150"></el-table-column>
-      <el-table-column prop="beginTime" label="比赛开始时间" width="150"></el-table-column>
-      <el-table-column prop="singEtime" label="报名截止时间" width="150"></el-table-column>
-      <el-table-column prop="des" label="详情" width="200"></el-table-column>
+      <el-table-column prop="promoter.name" label="发起人" width="150"></el-table-column>
+      <el-table-column prop="activityType" label="活动类型" width="150"></el-table-column>
+      <el-table-column prop="actTime" label="比赛开始时间" width="150"></el-table-column>
+      <el-table-column prop="endTime" label="报名截止时间" width="150"></el-table-column>
+      <el-table-column prop="description" label="详情" width="150"></el-table-column>
+      <el-table-column prop="location" label="地址" width="150"></el-table-column>
+      <el-table-column prop="phone" label="电话" width="150"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -74,12 +76,7 @@
 </template>
 
 <script>
-import {
-  fetchList,
-  fetchPv,
-  createArticle,
-  updateArticle
-} from "@/api/article";
+import {getActivity} from "@/api/activity"
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
 import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
@@ -119,17 +116,7 @@ export default {
           singEtime: "",
           des:""
       },
-      tableData: [
-       { 
-          id: 1,
-          name: "创青春",
-          host: "华东师范大学",
-          beginTime: "2019-12-15",
-          singEtime: "2019-12-10",
-          des:
-            "这是一个非常盛大的比赛，SDK纪念币是丢和软工普斯都恢复是读后感拍读后感配如果恩爱如何修复后地方"
-        },
-      ]
+      tableData: []
     };
   },
   methods: {
@@ -143,8 +130,16 @@ export default {
       this.info = this.default;
 
     }
+  },
+  mounted(){
+    var that = this;
+    getActivity().then( res => {
+      console.log("activity");
+          console.log(res.data);
+          that.tableData = res.data;
+    })
   }
-};
+}
 </script>
 <style scoped>
 .page {
