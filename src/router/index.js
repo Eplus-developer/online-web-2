@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'user',
       name: 'User',
       component: () => import('@/views/user/index'),
-      meta: { title: '用户管理', icon: 'dashboard' }
+      meta: { title: '用户管理', icon: 'user' }
     }]
   },
   {
@@ -62,7 +62,7 @@ export const constantRoutes = [
       path: 'team',
       name: 'Team',
       component: () => import('@/views/team/index'),
-      meta: { title: '团队管理', icon: 'dashboard' }
+      meta: { title: '团队管理', icon: 'table' }
     }]
   },
   {
@@ -73,7 +73,7 @@ export const constantRoutes = [
       path: 'activity',
       name: 'Activity',
       component: () => import('@/views/activity/index'),
-      meta: { title: '活动管理', icon: 'dashboard' }
+      meta: { title: '活动管理', icon: 'tree' }
     }]
   },
   {
@@ -84,7 +84,7 @@ export const constantRoutes = [
       path: 'course',
       name: 'Course',
       component: () => import('@/views/course/index'),
-      meta: { title: '课程管理', icon: 'dashboard' }
+      meta: { title: '课程管理', icon: 'form' }
     }]
   },
 

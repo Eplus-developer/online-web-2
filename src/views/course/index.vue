@@ -23,49 +23,103 @@
         @click="handleCreate"
       >Add</el-button>
     </div>
-    <el-table :data="tableData" stripe border style="width:100%;margin-top: 20px">
-      <el-table-column prop="id" label="ID" width="100"></el-table-column>
+    <el-table :data="perData" stripe border style="width:100%;margin-top: 20px">
       <el-table-column prop="name" label="名称" width="150"></el-table-column>
-      <el-table-column prop="teacher" label="讲师" width="150"></el-table-column>
-      <el-table-column prop="time" label="时间" width="150"></el-table-column>
-      <el-table-column prop="location" label="地址" width="150"></el-table-column>
-      <el-table-column prop="des" label="详情" width="200"></el-table-column>
-      <el-table-column  label="状态" width="200">
-
-          <template slot-scope="{row}">
-          <el-tag v-if="row.isCheck" type="success">已审核</el-tag>
-          <el-tag v-else  type="danger">未审核</el-tag>
-          
+      <el-table-column prop="lecture" label="讲师" width="150"></el-table-column>
+      <el-table-column label="活动类型" width="150">
+        <template slot-scope="{row}">
+          <div v-if="row.activityType == 'match' ">
+            <el-tag size="medium">{{ row.activityType }}</el-tag>
+            <el-tag size="medium" v-if="row.quantityType">团体赛</el-tag>
+            <el-tag size="medium" v-else>个人赛</el-tag>
+          </div>
+          <div v-else>
+            <el-tag size="medium">{{ row.activityType }}</el-tag>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column prop="actTime" label="比赛开始时间" width="150"></el-table-column>
+      <el-table-column prop="endTime" label="报名截止时间" width="150"></el-table-column>
+      <el-table-column prop="publishTime" label="比赛发布时间" width="150"></el-table-column>
+      <el-table-column prop="description" label="详情" width="150"></el-table-column>
+      <el-table-column prop="location" label="地址" width="150"></el-table-column>
+      <el-table-column prop="phone" label="电话" width="150"></el-table-column>
+      <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="团队信息" :visible.sync="dialogFormVisible">
-      <el-form :model="info">
-        <el-form-item label="名称" :label-width="formLabelWidth">
-          <el-input v-model="info.name" autocomplete="off"></el-input>
+    <el-dialog title="活动信息" :visible.sync="dialogFormVisible" width="60%">
+      <el-form :model="info" class="form">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="名称" :label-width="formLabelWidth">
+              <el-input v-model="info.name" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="活动类型" :label-width="formLabelWidth">
+              <el-cascader
+                :options="options"
+                v-model="typeValue"
+                clearable
+                :placeholder="info.activityType"
+                @change="changeType"
+              ></el-cascader>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="报名截止时间" :label-width="formLabelWidth">
+              <el-date-picker v-model="info.endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="比赛开始时间" :label-width="formLabelWidth">
+              <el-date-picker v-model="info.actTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" v-if="!isAdd">
+          <el-col :span="12">
+            <el-form-item label="发起人" :label-width="formLabelWidth">
+              <el-input v-model="info.promoter.name" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="比赛发布时间" :label-width="formLabelWidth">
+              <el-date-picker v-model="info.publishTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="地址" :label-width="formLabelWidth">
+              <el-input v-model="info.location" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="电话" :label-width="formLabelWidth">
+              <el-input v-model="info.phone" autocomplete="off"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="详情" :label-width="formLabelWidth">
+          <el-input
+            v-model="info.description"
+            autocomplete="off"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入内容"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="举办方" :label-width="formLabelWidth">
-          <el-input v-model="info.host" autocomplete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="比赛开始时间" :label-width="formLabelWidth">
-          <el-input v-model="info.beginTime" autocomplete="off"></el-input>
-        </el-form-item>
-         <el-form-item label="报名截止时间" :label-width="formLabelWidth">
-          <el-input v-model="info.singEtime" autocomplete="off"></el-input>
-        </el-form-item>  
-         <el-form-item label="详情" :label-width="formLabelWidth">
-          <el-input v-model="info.des" autocomplete="off"></el-input>
-        </el-form-item>     
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="editAcitvity">确 定</el-button>
       </div>
     </el-dialog>
     <el-pagination
@@ -82,15 +136,10 @@
 </template>
 
 <script>
-import {
-  fetchList,
-  fetchPv,
-  createArticle,
-  updateArticle
-} from "@/api/article";
+import { getCourse, editCourse, addCourse, deleteCourse } from "@/api/course";
 import waves from "@/directive/waves"; // waves directive
 import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import Pagination from "@/components/Pagination";
 
 export default {
   name: "ComplexTable",
@@ -111,32 +160,49 @@ export default {
   },
   data() {
     return {
+      typeValue: "",
       activeIndex: "1",
-      totalNum: 12,
-      pageSize: 6,
+      isAdd: false,
+      totalNum: 0,
+      pageSize: 2,
       currentPage: 1,
       search: "",
-      dialogFormVisible:false,
-      formLabelWidth:'100px',
-      info:{},
-      default:{
-         id: undefined,
-          name: "",
-         host: "",
-          beginTime: "",
-          singEtime: "",
-          des:""
+      dialogFormVisible: false,
+      formLabelWidth: "100px",
+      info: {},
+      default: {
+        name: "",
+        actTime: "",
+        endTime: "",
+        des: "",
+        activityType: "",
+        description: "",
+        quantityType: 0,
+        publishTime: "0000-00-00 00:00",
+        location: "",
+        phone: ""
       },
-      tableData: [
-       { 
-          id: 1,
-          name: "创青春",
-          teacher:'张同学',
-          location:'理科大楼',
-          des:'类似而国内三代人符合挨饿恢复奥尔罕爱我的号',
-          isCheck: false,
-          time:'2019-12-13'
+      tableData: [],
+      perData: [],
+      options: [
+        {
+          value: "match",
+          label: "match",
+          children: [
+            {
+              value: "single",
+              label: "个人赛"
+            },
+            {
+              value: "team",
+              label: "团队赛"
+            }
+          ]
         },
+        {
+          value: "course",
+          label: "course"
+        }
       ]
     };
   },
@@ -144,13 +210,76 @@ export default {
     handleEdit(index, row) {
       this.dialogFormVisible = true;
       this.info = row;
-
+      console.log(this.info);
     },
-    handleCreate(){
+    handleCreate() {
       this.dialogFormVisible = true;
+      this.isAdd = true;
       this.info = this.default;
-
+    },
+    handleCurrentChange() {
+      this.getCurrentData();
+    },
+    handleFilter() {},
+    getCurrentData() {
+      var x = this.currentPage * this.pageSize;
+      var x0 = (this.currentPage - 1) * this.pageSize;
+      if (x <= this.totalNum) this.perData = this.tableData.slice(x0, x);
+      else this.perData = this.tableData.slice(x0);
+    },
+    editAcitvity() {
+      var that = this;
+      if (!this.isAdd) {
+        editCourse(this.info).then(res => {
+          console.log(res);
+          that.message(res.code);
+        });
+      } else {
+        addCourse(this.info).then(res => {
+          console.log(res);
+          that.message(res.code);
+        });
+      }
+    },
+    changeType() {
+      console.log(this.typeValue);
+      if (this.typeValue[0] == "match") {
+        this.info.activityType = this.typeValue[0];
+        if (this.typeValue[1] == "single") this.info.quantityType = 0;
+        else this.info.quantityType = 1;
+      } else this.info.activityType = this.typeValue[0];
+    },
+    formatTime(e) {
+      return parseTime(e, "{y}-{m}-{d} {h}:{i}");
+    },
+    handleDelete(index, row) {
+      var that = this;
+      deleteCourse({ id: row.id }).then(res => {
+        console.log(res);
+        that.message(res.code);
+      });
+    },
+    message(code) {
+      if (code == 200)
+        this.$message({
+          message: "操作成功！",
+          type: "success"
+        });
+      else {
+        this.$message.error("操作失败！");
+      }
     }
+  },
+  mounted() {
+    var that = this;
+    getCourse().then(res => {
+      console.log("course");
+      console.log(res.data);
+      that.tableData = res.data;
+      that.totalNum = res.data.length;
+      that.info = that.tableData[0];
+      that.getCurrentData();
+    });
   }
 };
 </script>
