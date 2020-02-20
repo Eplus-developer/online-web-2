@@ -8,14 +8,6 @@
         style="width: 200px"
       ></el-input>
       <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        style="margin-left: 10px;"
-        @click="handleFilter"
-      >Search</el-button>
-      <el-button
         class="filter-item"
         style="margin-left: 10px;"
         type="primary"
@@ -23,27 +15,12 @@
         @click="handleCreate"
       >Add</el-button>
     </div>
-    <el-table :data="perData" stripe border style="width:100%;margin-top: 20px">
+    <el-table :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" stripe border style="width:100%;margin-top: 20px">
       <el-table-column prop="name" label="名称" width="150"></el-table-column>
-      <el-table-column prop="lecture" label="讲师" width="150"></el-table-column>
-      <el-table-column label="活动类型" width="150">
-        <template slot-scope="{row}">
-          <div v-if="row.activityType == 'match' ">
-            <el-tag size="medium">{{ row.activityType }}</el-tag>
-            <el-tag size="medium" v-if="row.quantityType">团体赛</el-tag>
-            <el-tag size="medium" v-else>个人赛</el-tag>
-          </div>
-          <div v-else>
-            <el-tag size="medium">{{ row.activityType }}</el-tag>
-          </div>
-        </template>
+      <el-table-column prop="lecturer.name" label="讲师" width="150"></el-table-column>
+      <el-table-column  prop="activity.name" label="活动" width="150">
       </el-table-column>
-      <el-table-column prop="actTime" label="比赛开始时间" width="150"></el-table-column>
-      <el-table-column prop="endTime" label="报名截止时间" width="150"></el-table-column>
-      <el-table-column prop="publishTime" label="比赛发布时间" width="150"></el-table-column>
-      <el-table-column prop="description" label="详情" width="150"></el-table-column>
-      <el-table-column prop="location" label="地址" width="150"></el-table-column>
-      <el-table-column prop="phone" label="电话" width="150"></el-table-column>
+      <el-table-column prop="team.name" label="团队名称" width="150"></el-table-column>
       <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -51,7 +28,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="活动信息" :visible.sync="dialogFormVisible" width="60%">
+    <el-dialog title="课程信息" :visible.sync="dialogFormVisible" width="60%">
       <el-form :model="info" class="form">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -59,63 +36,24 @@
               <el-input v-model="info.name" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="活动类型" :label-width="formLabelWidth">
-              <el-cascader
-                :options="options"
-                v-model="typeValue"
-                clearable
-                :placeholder="info.activityType"
-                @change="changeType"
-              ></el-cascader>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="报名截止时间" :label-width="formLabelWidth">
-              <el-date-picker v-model="info.endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="比赛开始时间" :label-width="formLabelWidth">
-              <el-date-picker v-model="info.actTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+          <el-col :span="12" v-if="!isAdd">
+            <el-form-item label="讲师" :label-width="formLabelWidth">
+              <el-input v-model="info.lecturer.name" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20" v-if="!isAdd">
           <el-col :span="12">
-            <el-form-item label="发起人" :label-width="formLabelWidth">
-              <el-input v-model="info.promoter.name" autocomplete="off"></el-input>
+            <el-form-item label="活动名称" :label-width="formLabelWidth">
+              <el-input v-model="info.activity.name" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="比赛发布时间" :label-width="formLabelWidth">
-              <el-date-picker v-model="info.publishTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+            <el-form-item label="团队名称" :label-width="formLabelWidth">
+              <el-input v-model="info.team.name" autocomplete="off"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="地址" :label-width="formLabelWidth">
-              <el-input v-model="info.location" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="电话" :label-width="formLabelWidth">
-              <el-input v-model="info.phone" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="详情" :label-width="formLabelWidth">
-          <el-input
-            v-model="info.description"
-            autocomplete="off"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -172,38 +110,15 @@ export default {
       info: {},
       default: {
         name: "",
-        actTime: "",
-        endTime: "",
-        des: "",
-        activityType: "",
-        description: "",
-        quantityType: 0,
-        publishTime: "0000-00-00 00:00",
-        location: "",
-        phone: ""
+        team:{
+          team_id:0
+        },
+        activity:{
+          id:1 
+        }
       },
       tableData: [],
       perData: [],
-      options: [
-        {
-          value: "match",
-          label: "match",
-          children: [
-            {
-              value: "single",
-              label: "个人赛"
-            },
-            {
-              value: "team",
-              label: "团队赛"
-            }
-          ]
-        },
-        {
-          value: "course",
-          label: "course"
-        }
-      ]
     };
   },
   methods: {
@@ -220,7 +135,6 @@ export default {
     handleCurrentChange() {
       this.getCurrentData();
     },
-    handleFilter() {},
     getCurrentData() {
       var x = this.currentPage * this.pageSize;
       var x0 = (this.currentPage - 1) * this.pageSize;
@@ -240,17 +154,6 @@ export default {
           that.message(res.code);
         });
       }
-    },
-    changeType() {
-      console.log(this.typeValue);
-      if (this.typeValue[0] == "match") {
-        this.info.activityType = this.typeValue[0];
-        if (this.typeValue[1] == "single") this.info.quantityType = 0;
-        else this.info.quantityType = 1;
-      } else this.info.activityType = this.typeValue[0];
-    },
-    formatTime(e) {
-      return parseTime(e, "{y}-{m}-{d} {h}:{i}");
     },
     handleDelete(index, row) {
       var that = this;

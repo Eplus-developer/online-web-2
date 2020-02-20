@@ -15,7 +15,7 @@ export function editCourse(data) {
 }
 export function addCourse(data) {
     return request({
-      url: '/course',
+      url: '/course/'+data.activity.id,
       method: 'post',
       data
     })
