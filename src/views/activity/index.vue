@@ -7,14 +7,6 @@
         v-model="search"
         style="width: 200px"
       ></el-input>
-      <!-- <el-button
-        v-waves
-        class="filter-item"
-        type="primary"
-        icon="el-icon-search"
-        style="margin-left: 10px;"
-        @click="handleFilter"
-      >Search</el-button> -->
       <el-button
         class="filter-item"
         style="margin-left: 10px;"
@@ -23,6 +15,7 @@
         @click="handleCreate"
       >Add</el-button>
     </div>
+    <div v-if="!isLoading">
     <el-table :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" stripe border style="width:100%;margin-top: 20px">
       <el-table-column prop="name" label="名称" width="150"></el-table-column>
       <el-table-column prop="promoter.name" label="发起人" width="150"></el-table-column>
@@ -122,6 +115,10 @@
         <el-button type="primary" @click="editAcitvity">确 定</el-button>
       </div>
     </el-dialog>
+    </div>
+    <div v-else v-loading="isLoading" style="margin-top:200px">
+
+    </div>
     <el-pagination
       background
       class="page"
@@ -167,6 +164,7 @@ export default {
     return {
       typeValue: "",
       activeIndex: "1",
+      isLoading: true,
       isAdd: false,
       totalNum: 0,
       pageSize: 2,
@@ -241,11 +239,13 @@ export default {
         editActivity(this.info).then(res => {
           console.log(res);
           that.message(res.code);
+          that.dialogFormVisible = false;
         });
       } else {
         addActivity(this.info).then(res => {
           console.log(res);
           that.message(res.code);
+          that.dialogFormVisible = false;
         });
       }
     },
@@ -284,6 +284,7 @@ export default {
       console.log("activity");
       console.log(res.data);
       that.tableData = res.data;
+      that.isLoading = false;
       that.totalNum = res.data.length;
       that.info = that.tableData[0];
       that.getCurrentData();

@@ -15,51 +15,58 @@
         @click="handleCreate"
       >Add</el-button>
     </div>
-    <el-table :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" stripe border style="width:100%;margin-top: 20px">
-      <el-table-column prop="name" label="名称" width="150"></el-table-column>
-      <el-table-column prop="lecturer.name" label="讲师" width="150"></el-table-column>
-      <el-table-column  prop="activity.name" label="活动" width="150">
-      </el-table-column>
-      <el-table-column prop="team.name" label="团队名称" width="150"></el-table-column>
-      <el-table-column label="操作" fixed="right" width="150">
-        <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-          <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-dialog title="课程信息" :visible.sync="dialogFormVisible" width="60%">
-      <el-form :model="info" class="form">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="名称" :label-width="formLabelWidth">
-              <el-input v-model="info.name" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="!isAdd">
-            <el-form-item label="讲师" :label-width="formLabelWidth">
-              <el-input v-model="info.lecturer.name" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="!isAdd">
-          <el-col :span="12">
-            <el-form-item label="活动名称" :label-width="formLabelWidth">
-              <el-input v-model="info.activity.name" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="团队名称" :label-width="formLabelWidth">
-              <el-input v-model="info.team.name" autocomplete="off"></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editAcitvity">确 定</el-button>
-      </div>
-    </el-dialog>
+    <div v-if="!isLoading">
+      <el-table
+        :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+        stripe
+        border
+        style="width:100%;margin-top: 20px"
+      >
+        <el-table-column prop="name" label="名称" width="150"></el-table-column>
+        <el-table-column prop="lecturer.name" label="讲师" width="150"></el-table-column>
+        <el-table-column prop="activity.name" label="活动" width="150"></el-table-column>
+        <el-table-column prop="team.name" label="团队名称" width="150"></el-table-column>
+        <el-table-column label="操作" fixed="right" width="150">
+          <template slot-scope="scope">
+            <el-button size="mini" type="danger" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+            <el-button size="mini" type="primary" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-dialog title="课程信息" :visible.sync="dialogFormVisible" width="60%">
+        <el-form :model="info" class="form">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="名称" :label-width="formLabelWidth">
+                <el-input v-model="info.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="!isAdd">
+              <el-form-item label="讲师" :label-width="formLabelWidth">
+                <el-input v-model="info.lecturer.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" v-if="!isAdd">
+            <el-col :span="12">
+              <el-form-item label="活动名称" :label-width="formLabelWidth">
+                <el-input v-model="info.activity.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="团队名称" :label-width="formLabelWidth">
+                <el-input v-model="info.team.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editAcitvity">确 定</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <div v-else v-loading="isLoading" style="margin-top:200px"></div>
     <el-pagination
       background
       class="page"
@@ -101,6 +108,7 @@ export default {
       typeValue: "",
       activeIndex: "1",
       isAdd: false,
+      isLoading: true,
       totalNum: 0,
       pageSize: 2,
       currentPage: 1,
@@ -110,15 +118,15 @@ export default {
       info: {},
       default: {
         name: "",
-        team:{
-          team_id:0
+        team: {
+          team_id: 0
         },
-        activity:{
-          id:1 
+        activity: {
+          id: 1
         }
       },
       tableData: [],
-      perData: [],
+      perData: []
     };
   },
   methods: {
@@ -147,11 +155,13 @@ export default {
         editCourse(this.info).then(res => {
           console.log(res);
           that.message(res.code);
+          that.dialogFormVisible = false;
         });
       } else {
         addCourse(this.info).then(res => {
           console.log(res);
           that.message(res.code);
+          that.dialogFormVisible = false;
         });
       }
     },
@@ -179,6 +189,7 @@ export default {
       console.log("course");
       console.log(res.data);
       that.tableData = res.data;
+      that.isLoading = false;
       that.totalNum = res.data.length;
       that.info = that.tableData[0];
       that.getCurrentData();
