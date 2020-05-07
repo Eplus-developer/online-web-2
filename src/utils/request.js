@@ -3,8 +3,9 @@ import axios from 'axios'
 const service = axios.create({
   baseURL: '/api', // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 50000 // request timeout
 })
+
 
 // request interceptor
 service.interceptors.request.use(

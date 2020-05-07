@@ -13,9 +13,8 @@
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
-      >Add</el-button>
+      >添加</el-button>
     </div>
-    <div v-if="!isLoading">
       <el-table
         :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         stripe
@@ -65,8 +64,7 @@
           <el-button type="primary" @click="editAcitvity">确 定</el-button>
         </div>
       </el-dialog>
-    </div>
-    <div v-else v-loading="isLoading" style="margin-top:200px"></div>
+    <div  v-loading="isLoading" style="margin-top:200px"></div>
     <el-pagination
       background
       class="page"
@@ -115,7 +113,18 @@ export default {
       search: "",
       dialogFormVisible: false,
       formLabelWidth: "100px",
-      info: {},
+      info: {
+        name: "",
+        lecturer:{
+          name:''
+        },
+        activity:{
+          name:''
+        },
+        team:{
+          name:''
+        }
+      },
       default: {
         name: "",
         team: {
@@ -125,7 +134,18 @@ export default {
           id: 1
         }
       },
-      tableData: [],
+      tableData: [{
+        name: "",
+        lecturer:{
+          name:''
+        },
+        activity:{
+          name:''
+        },
+        team:{
+          name:''
+        }
+      }],
       perData: []
     };
   },

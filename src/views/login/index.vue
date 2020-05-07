@@ -19,7 +19,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="请输入学号"
           name="username"
           type="text"
           tabindex="1"
@@ -36,7 +36,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -65,6 +65,7 @@
 <script>
 import { validUsername } from "@/utils/validate";
 import { login } from "@/api/user.js";
+import store from '../../store'
 
 export default {
   name: "Login",
@@ -85,8 +86,8 @@ export default {
     };
     return {
       loginForm: {
-        username: "admin",
-        password: "111111"
+        username: "",
+        password: ""
       },
       loginRules: {
         username: [
@@ -124,17 +125,21 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true;
-          // this.$store.dispatch('user/login', this.loginForm).then(() => {
-          //   this.$router.push({ path: '/' })
-          //   this.loading = false
-          // }).catch(() => {
-          //   this.loading = false
-          // })
-          login().then(res => {
+          this.$store.dispatch('user/login', this.loginForm).then(() => {
+            console.log("dfv")
             this.$router.push({ path: '/' })
-            console.log("success");
+            console.log(store.getters);
+            console.log(this.$store.state.user.loginState);
             this.loading = false
-          });
+          }).catch(() => {
+            this.loading = false
+          })
+          // login("101","123456").then(res => {
+          //   console.log("success");
+          //   this.$router.push({ path: '/' })
+          //   console.log("success");
+          //   this.loading = false
+          // });
         } else {
           console.log("error submit!!");
           return false;
@@ -144,10 +149,6 @@ export default {
   },
   mounted() {
     console.log("login");
-    login().then(res => {
-      console.log("success");
-      console.log(res.data);
-    });
   }
 };
 </script>

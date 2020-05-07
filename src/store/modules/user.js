@@ -1,11 +1,13 @@
 import { login, logout, getInfo } from '@/api/user'
-// import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+// import user from 'mock/user'
 
 const getDefaultState = () => {
   return {
     name: '',
-    avatar: ''
+    userId: 0,
+    avatar: '',
+    loginState:false
   }
 }
 
@@ -20,16 +22,29 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_USERID: (state, id) => {
+    state.userId = id
+  },
+  SET_LOGINSTATE: (state,loginState) =>{
+    state.loginState = loginState
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    console.log(userInfo);
     return new Promise((resolve, reject) => {
-      login().then(response => {
-        console.log("login succ")
+      console.log("logining");
+      login(userInfo.username,userInfo.password).then(res => {
+        console.log(res);
+        commit('SET_LOGINSTATE',true);
+        commit('SET_USERID',res.data.userId);
+        commit('SET_AVATAR',res.data.userFaceImage);
+        commit('SET_NAME',res.data.userName);
+        resolve();
+
       }).catch(error => {
         reject(error)
       })
@@ -60,8 +75,7 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        removeToken() // must remove  token  first
+      logout().then(() => {
         resetRouter()
         commit('RESET_STATE')
         resolve()

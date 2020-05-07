@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
-export function login() {
-  return request({
-    url: '/user/myself',
-    method: 'get',
-  })
-}
+// export function login() {
+//   return request({
+//     url: '/user/myself',
+//     method: 'get',
+//   })
+// }
 
 export function getInfo(token) {
   return request({
@@ -17,7 +17,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
+    url: '/signOut',
     method: 'post'
   })
 }
@@ -51,5 +51,13 @@ export function allUser(data) {
     url: '/user/all',
     method: 'get',
     data
+  })
+}
+
+export function login(stuId,password) {
+  return request({
+    url: '/webLogin',
+    method: 'post',
+    params:{stuId:stuId,password:password}
   })
 }

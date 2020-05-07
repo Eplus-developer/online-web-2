@@ -13,9 +13,9 @@
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
-      >Add</el-button>
+      >添加</el-button>
     </div>
-    <div v-if="!isLoading">
+    <!-- <div v-if="!isLoading"> -->
     <el-table :data="perData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))" stripe border style="width:100%;margin-top: 20px">
       <el-table-column prop="name" label="名称" width="150"></el-table-column>
       <el-table-column prop="promoter.name" label="发起人" width="150"></el-table-column>
@@ -115,8 +115,8 @@
         <el-button type="primary" @click="editAcitvity">确 定</el-button>
       </div>
     </el-dialog>
-    </div>
-    <div v-else v-loading="isLoading" style="margin-top:200px">
+    <!-- </div> -->
+    <div  v-loading="isLoading" style="margin-top:200px">
 
     </div>
     <el-pagination
@@ -172,7 +172,21 @@ export default {
       search: "",
       dialogFormVisible: false,
       formLabelWidth: "100px",
-      info: {},
+      info: {
+        name: "",
+        actTime: "",
+        endTime: "",
+        des: "",
+        activityType: "",
+        description: "",
+        quantityType: 0,
+        publishTime: "0000-00-00 00:00",
+        location: "",
+        phone: "",
+        promoter:{
+          name:''
+        }
+      },
       default: {
         name: "",
         actTime: "",
@@ -185,7 +199,21 @@ export default {
         location: "",
         phone: ""
       },
-      tableData: [],
+      tableData: [{
+        name: "",
+        actTime: "",
+        endTime: "",
+        des: "",
+        activityType: "",
+        description: "",
+        quantityType: 0,
+        publishTime: "0000-00-00 00:00",
+        location: "",
+        phone: "",
+        promoter:{
+          name:''
+        }
+      }],
       perData: [],
       options: [
         {
